@@ -89,7 +89,7 @@ test-suite tests
     main-is: tests-main.hs
     ghc-options: -threaded  -Wall
     hs-source-dirs: tests .
-    build-depends: slack-api, base
+    build-depends: slack-api, base, transformers
     other-modules: Tests.ConnectionTest
 
 executable example_echobot

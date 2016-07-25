@@ -59,7 +59,37 @@ module Web.Slack
     , SlackSession(..)
     , Event(..)
     , module Web.Slack.Types
+
+      -- * Compatibility with 0.9
+      -- $event_loop
+    , SlackBot
+    , runBot
     ) where
 
+import Control.Monad.State
 import Web.Slack.Monad
 import Web.Slack.Types
+
+
+-- $event_loop
+--
+-- These functions are included to aid backward-compatibility with version
+-- 0.9 of this package.
+--
+-- > main :: IO ()
+-- > main = runBot myConfig echobot ()
+-- >
+-- > echobot :: SlackBot ()
+-- > echobot (Message cid _ msg _ _ _) = sendMessage cid msg
+-- > echobot _ = return ()
+
+type SlackBot s = Event -> StateT s Slack ()
+
+-- |
+-- > runBot conf runloop s0 =
+-- >     runSlack conf $ flip evalStateT s0 $
+-- >         forever (getNextEvent >>= runloop)
+runBot :: SlackConfig -> SlackBot s -> s -> IO ()
+runBot conf runloop s0 =
+    runSlack conf $ flip evalStateT s0 $
+        forever (getNextEvent >>= runloop)
