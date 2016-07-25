@@ -3,7 +3,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
 
--- | The handle-based API.
+-- | The handle-based API. You may find the monadic API (found in
+-- "Web.Slack.Monad") more convenient.
 --
 -- > main :: IO ()
 -- > main = withSlackHandle myConfig echobot
@@ -12,6 +13,10 @@
 -- > echobot h = forever $ getNextEvent h >>= \case
 -- >     Message cid _ msg _ _ _ -> sendMessage cid msg h
 -- >     _ -> return ()
+--
+-- This style is typically more verbose than code written with the 'Slack'
+-- monad, but it is more flexible. For instance, consider forking multiple
+-- threads which share a single handle.
 --
 module Web.Slack.Handle
     ( SlackHandle

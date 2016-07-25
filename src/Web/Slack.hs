@@ -22,8 +22,9 @@
 -- > main = runBot myConfig echoBot ()
 --
 module Web.Slack
-    ( SlackHandle
-    , withSlackHandle
+    ( MonadSlack
+    , Slack(..)
+    , runSlack
 
       -- * Writing slack bots
     , getNextEvent
@@ -40,5 +41,5 @@ module Web.Slack
     , module Web.Slack.Types
     ) where
 
-import Web.Slack.Handle
+import Web.Slack.Monad
 import Web.Slack.Types

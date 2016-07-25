@@ -25,7 +25,7 @@ makeLenses ''CounterState
 main :: IO ()
 main = do
     conf <- mkConfig
-    withSlackHandle conf $ \h -> evalStateT (counterBot h) (CounterState 0)
+    runSlack conf $ evalStateT counterBot (CounterState 0)
 
 mkConfig :: IO SlackConfig
 mkConfig = do
@@ -34,10 +34,10 @@ mkConfig = do
     return SlackConfig{ _slackApiToken = apiToken }
 
 -- Count how many messages the bot recieves
-counterBot :: SlackHandle -> StateT CounterState IO ()
-counterBot h = forever $
-    liftIO (getNextEvent h) >>= \case
+counterBot :: StateT CounterState Slack ()
+counterBot = forever $
+    getNextEvent >>= \case
         Message cid _ _ _ _ _ -> do
             num <- messageCount <%= (+1)
-            liftIO $ sendMessage h cid (T.pack . show $ num)
+            sendMessage cid (T.pack . show $ num)
         _ -> return ()

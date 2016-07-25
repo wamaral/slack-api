@@ -32,6 +32,7 @@ library
   exposed-modules:
       Web.Slack
     , Web.Slack.Handle
+    , Web.Slack.Monad
     , Web.Slack.Types
     , Web.Slack.Types.Base
     , Web.Slack.Types.Bot

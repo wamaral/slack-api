@@ -15,7 +15,7 @@ import Control.Applicative
 main :: IO ()
 main = do
     conf <- mkConfig
-    withSlackHandle conf echoBot
+    runSlack conf echoBot
 
 mkConfig :: IO SlackConfig
 mkConfig = do
@@ -23,8 +23,8 @@ mkConfig = do
     let apiToken = fromMaybe (error "SLACK_API_TOKEN not set") x
     return SlackConfig{ _slackApiToken = apiToken }
 
-echoBot :: SlackHandle -> IO ()
-echoBot h = forever $ do
-    getNextEvent h >>= \case
-        (Message cid _ msg _ _ _) -> sendMessage h cid msg
+echoBot :: Slack ()
+echoBot = forever $ do
+    getNextEvent >>= \case
+        (Message cid _ msg _ _ _) -> sendMessage cid msg
         _ -> return ()
