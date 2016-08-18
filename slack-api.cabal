@@ -114,3 +114,11 @@ executable example_timerbot
     hs-source-dirs:      example
     main-is:             TimerBot.hs
     build-depends:       base, slack-api, text, transformers
+
+
+executable example_richmessagebot
+    default-language:    Haskell2010
+    ghc-options:         -Wall -threaded
+    hs-source-dirs:      example
+    main-is:             RichMessageBot.hs
+    build-depends:       base, slack-api, text, transformers
