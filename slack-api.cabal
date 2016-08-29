@@ -122,3 +122,10 @@ executable example_richmessagebot
     hs-source-dirs:      example
     main-is:             RichMessageBot.hs
     build-depends:       base, slack-api, text, transformers
+
+executable example_pipebot
+    default-language:    Haskell2010
+    ghc-options:         -Wall -threaded
+    hs-source-dirs:      example
+    main-is:             PipeBot.hs
+    build-depends:       base, slack-api, text, transformers, pipes
