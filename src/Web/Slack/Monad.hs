@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
 
 -- | The monadic API. You may find the handle-based API (found in
 -- "Web.Slack.Handle") more flexible.
@@ -37,6 +39,7 @@ module Web.Slack.Monad
     , module Web.Slack.Types
     ) where
 
+import Control.Monad.Base
 import Control.Monad.Cont
 import Control.Monad.Except
 import Control.Monad.List
@@ -45,6 +48,7 @@ import qualified Control.Monad.RWS.Strict as S
 import Control.Monad.Reader
 import qualified Control.Monad.State.Lazy   as L
 import qualified Control.Monad.State.Strict as S
+import Control.Monad.Trans.Control
 import Control.Monad.Trans.Identity
 import Control.Monad.Trans.Maybe
 import qualified Control.Monad.Writer.Lazy   as L
@@ -78,7 +82,12 @@ instance (MonadSlack m, Monoid w) => MonadSlack (L.RWST r w s m) LIFT_SLACK
 -- So, for instance, it's now possible for the user to use @ReaderT Foo
 -- Stack ()@ whilst still having it be an instance of MonadSlack.
 newtype Slack a = Slack (ReaderT H.SlackHandle IO a)
-    deriving (Functor, Applicative, Monad, MonadIO)
+    deriving (Functor, Applicative, Monad, MonadIO, MonadBase IO)
+
+instance MonadBaseControl IO Slack where
+    type StM Slack a = a
+    liftBaseWith f = handledToMonadic $ \h -> f (\x -> monadicToHandled x h)
+    restoreM = return
 
 runSlack :: SlackConfig -> Slack a -> IO a
 runSlack conf (Slack x) = H.withSlackHandle conf (runReaderT x)
